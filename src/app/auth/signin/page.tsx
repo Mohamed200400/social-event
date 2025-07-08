@@ -1,13 +1,37 @@
+"use client";
 import { Input } from "@/components/ui/input";
 import { Pages, Routes } from "@/constant/enums";
 import { Label } from "@radix-ui/react-label";
 import Link from "next/link";
-import React from "react";
+import React, {  useActionState, useEffect } from "react";
+import { login } from "../_actions/auth";
+import Loader from "@/components/Loader";
+import { toast } from "sonner";
+
 
 function SignInPage() {
+  const initialState = {
+    message: "",
+    error: "",
+    success: false,
+  };
+  const [state, action,isPending] = useActionState(login,initialState);
+  useEffect(() => {
+    if (state.success) {
+      toast(state.message, {
+   style: { background: "#fff", color: "green" }
+});
+    }
+    if (state.error) {
+      toast(state.error, {
+        style: { background: "#fff", color: "red" }
+      });
+    }
+  }, [state]);
+  
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <form className="bg-white p-8 rounded shadow-md w-full max-w-sm">
+      <form className="bg-white p-8 rounded shadow-md w-full max-w-sm" action={action}>
         <h2 className="text-2xl font-semibold mb-6 text-center">Sign In</h2>
         <div className="mb-4">
           <Label className="block mb-1 text-gray-700" htmlFor="email">
@@ -38,11 +62,16 @@ function SignInPage() {
           />
         </div>
         <button
+        
+          disabled={isPending}
           type="submit"
           className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
         >
-          Sign In
+          {isPending ? <Loader/> : "Sign In"}
+          
         </button>
+        
+        
         <div className="mt-6 text-center text-sm text-gray-600">
           Don&apos;t have an account?{" "}
           <Link

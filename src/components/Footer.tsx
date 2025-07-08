@@ -1,3 +1,4 @@
+import { Pages, Routes } from "@/constant/enums";
 import Link from "next/link";
 import React from "react";
 
@@ -13,7 +14,7 @@ function Footer() {
         </p>
         <div className="m-auto w-fit mt-8 ">
           <button className="rounded-4xl px-7 py-2 bg-black text-white mr-3">
-            <Link href={"#"}>Get started</Link>
+            <Link href={`/${Routes.AUTH}/${Pages.REGISTER}`}>Get started</Link>
           </button>
         </div>
       </main>

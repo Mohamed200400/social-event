@@ -1,23 +1,41 @@
 "use client";
 
-import React, { useActionState } from "react";
+import React, { useActionState, useEffect } from "react";
 import { Pages, Routes } from "@/constant/enums";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { signup } from "../_actions/auth";
-
+import Loader from "@/components/Loader";
+import { toast } from "sonner";
 
 function page() {
-    const  initialState = {
-        message: "",
-        error: "",
-        success: false,
-}
-    const [state,action] = useActionState(signup,initialState );
+  const initialState = {
+    message: "",
+    error: "",
+    success: false,
+  };
+  const [state, action, isPending] = useActionState(signup, initialState);
+
+  useEffect(() => {
+    if (state.success) {
+      toast(state.message, {
+        style: { background: "#fff", color: "green" },
+      });
+    }
+    if (state.error) {
+      toast(state.error, {
+        style: { background: "#fff", color: "red" },
+      });
+    }
+  }, [state]);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <form className="bg-white p-8 rounded shadow-md w-full max-w-sm" action={action}>
+      <form
+        className="bg-white p-8 rounded shadow-md w-full max-w-sm"
+        action={action}
+      >
         <h2 className="text-2xl font-semibold mb-6 text-center">Sign Up</h2>
         <div className="mb-4">
           <Label className="block mb-1 text-gray-700" htmlFor="name">
@@ -31,8 +49,8 @@ function page() {
             required
             placeholder="Enter your name"
           />
-          {!state && console.log(state)}        
-          </div>
+          {!state && console.log(state)}
+        </div>
         <div className="mb-4">
           <Label className="block mb-1 text-gray-700" htmlFor="email">
             Email
@@ -78,10 +96,11 @@ function page() {
           />
         </div>
         <button
+          disabled={isPending}
           type="submit"
           className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
         >
-          Sign Up
+          {isPending ? <Loader /> : "Sign Up"}
         </button>
         <div className="mt-6 text-center text-sm text-gray-600">
           you have an account?{" "}

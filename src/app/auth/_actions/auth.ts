@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { ca } from "zod/v4/locales";
 
 export type initialState = {
     message?: string;
@@ -20,11 +21,7 @@ export async function signup(
     
 
   if (!name || !email || !password || !confirmPassword) {
-    return { error: "All fields are required" };
-  }
-
-  if (password !== confirmPassword) {
-    return { error: "Passwords do not match" };
+    return { success: false, error: "All fields are required" };
   }
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -37,7 +34,7 @@ export async function signup(
       },
     });
     console.log("success");
-    return { success: true };
+    return { success: true, message: "Signup successfully" };
     
   } catch (e: any) {
     if (e.code === "P2002") {
@@ -49,4 +46,42 @@ export async function signup(
   // Here you would typically send the data to your server or API
   // For now, we will just simulate a successful signup
  
+}
+
+
+export async function login(
+  prevState: initialState,
+  formData: FormData
+): Promise<any> {
+  
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  if (!email || !password) {
+    return { success:false , error: "Email and password are required" };
+  }
+  try{
+    
+    const user = await db.user.findUnique({
+      where: { 
+        email: email,
+        
+      },
+    });
+    if (user){
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (isPasswordValid) {
+        // Here you would typically set a session or token
+        console.log("login successful");
+        return { success: true, message: "Login successful" };
+      } else {
+        return { success:false , error: "Invalid email or password" };
+      }
+    }
+
+  }catch(e: any) {
+    console.error("Error during login:", e);
+    return {success:false , error: "Something went wrong" };
+
+  }
+  
 }
