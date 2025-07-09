@@ -8,6 +8,7 @@ import { Label } from "@radix-ui/react-label";
 import { signup } from "../_actions/auth";
 import Loader from "@/components/Loader";
 import { toast } from "sonner";
+import { redirect } from "next/navigation";
 
 function page() {
   const initialState = {
@@ -22,6 +23,7 @@ function page() {
       toast(state.message, {
         style: { background: "#fff", color: "green" },
       });
+      redirect(`/${Routes.AUTH}/${Pages.LOGIN}`);
     }
     if (state.error) {
       toast(state.error, {

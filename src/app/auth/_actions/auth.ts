@@ -2,7 +2,8 @@
 
 import { db } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { ca } from "zod/v4/locales";
+import { signIn } from "next-auth/react";
+
 
 export type initialState = {
     message?: string;
@@ -34,7 +35,7 @@ export async function signup(
       },
     });
     console.log("success");
-    return { success: true, message: "Signup successfully" };
+    return { success: true, message: "Account created successfully" };
     
   } catch (e: any) {
     if (e.code === "P2002") {
@@ -72,11 +73,14 @@ export async function login(
       if (isPasswordValid) {
         // Here you would typically set a session or token
         console.log("login successful");
+        
         return { success: true, message: "Login successful" };
       } else {
         return { success:false , error: "Invalid email or password" };
       }
     }
+    
+
 
   }catch(e: any) {
     console.error("Error during login:", e);
