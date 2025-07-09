@@ -20,8 +20,88 @@ model User {
   email String @unique
   name  String
   password String
+  image      String?
+  bio         String?
+  phone       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  city        String?
+
+  posts     Post[] 
+  interests  Category[]  @relation("UserInterests")
+  comments  Comment[]
+
+  likedPosts    Post[]   @relation("PostLikes")
+  favoritedPosts Post[]  @relation("PostFavorites")
+
+
+}
+
+
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  image     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  comments  Comment[]
+
+   categories Category[]  @relation("PostCategories")
+
+  userId    Int   
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  likedBy     User[]   @relation("PostLikes")
+  favoritedBy User[]   @relation("PostFavorites")
+
+}
+
+
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      CategoryTagType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  posts      Post[]       @relation("PostCategories")
+
+  users      User[]      @relation("UserInterests")
   
 }
 
+
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  postId    Int   
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  userId    Int   
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+
+
+enum CategoryTagType {
+  MUSIC
+  SPORTS
+  ART
+  TECH
+  EDUCATION
+  FOOD
+  TRAVEL
+  HEALTH
+  FASHION
+  BUSINESS
+  ENTERTAINMENT
+  LIFESTYLE
+  CAMPING
+  GAMING
+}
