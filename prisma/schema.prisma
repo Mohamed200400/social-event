@@ -26,6 +26,7 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   city        String?
+  role        Role @default(USER)
 
   posts     Post[] 
   interests  Category[]  @relation("UserInterests")
@@ -87,6 +88,11 @@ model Comment {
 }
 
 
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
+}
 
 
 enum CategoryTagType {

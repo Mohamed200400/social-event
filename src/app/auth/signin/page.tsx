@@ -35,7 +35,7 @@ function SignInPage() {
         });
         
         
-          redirect(`/${Routes.PROFILE}`);
+          
         
       };
       
