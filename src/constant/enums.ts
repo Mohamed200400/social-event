@@ -19,4 +19,5 @@ export enum Pages {
   ORDERS = "orders",
   NEW = "new",
   EDIT = "edit",
+  PROFILE = "profile",
 }

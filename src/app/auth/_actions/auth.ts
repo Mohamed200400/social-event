@@ -2,7 +2,9 @@
 
 import { db } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { signIn } from "next-auth/react";
+
+import { cookies } from "next/headers";
+import jwt from 'jsonwebtoken';
 
 
 export type initialState = {
@@ -71,7 +73,27 @@ export async function login(
     if (user){
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (isPasswordValid) {
+        
         // Here you would typically set a session or token
+        const token = jwt.sign(
+          { 
+            userId: user.id, 
+            email: user.email ,
+            role: user.role // Assuming you have a role field in your user model
+          },
+          process.env.JWT_SECRET!, // Make sure this is set in your .env file
+          { expiresIn: '7d' } // Token expires in 7 days
+        );
+
+        // Set the token in an HTTP-only cookie
+        const cookieStore = await cookies();
+        cookieStore.set('token', token, {
+          
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict' as const,
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+          path: '/',
+        });
         console.log("login successful");
         
         return { success: true, message: "Login successful" };

@@ -1,4 +1,4 @@
-"use client";
+/*"use client";
 import { Input } from "@/components/ui/input";
 import { Pages, Routes } from "@/constant/enums";
 import { Label } from "@radix-ui/react-label";
@@ -40,6 +40,7 @@ function SignInPage() {
       };
       
       handleSignIn();
+      redirect(`/${Pages.PROFILE}`); 
     
 
     }
@@ -55,6 +56,109 @@ function SignInPage() {
       <form
         className="bg-white p-8 rounded shadow-md w-full max-w-sm"
         action={action}
+      >
+        <h2 className="text-2xl font-semibold mb-6 text-center">Sign In</h2>
+        <div className="mb-4">
+          <Label className="block mb-1 text-gray-700" htmlFor="email">
+            Email
+          </Label>
+          <Input
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+            type="email"
+            id="email"
+            name="email"
+            required
+            autoComplete="email"
+            placeholder="Enter your email"
+          />
+        </div>
+        <div className="mb-6">
+          <Label className="block mb-1 text-gray-700" htmlFor="password">
+            Password
+          </Label>
+          <Input
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+            type="password"
+            id="password"
+            name="password"
+            required
+            autoComplete="current-password"
+            placeholder="Enter your password"
+          />
+        </div>
+        <button
+          disabled={isPending}
+          type="submit"
+          className="w-full bg-black text-white py-2 rounded hover:bg-gray-800 transition"
+        >
+          {isPending ? <Loader /> : "Sign In"}
+        </button>
+
+        <div className="mt-6 text-center text-sm text-gray-600">
+          Don&apos;t have an account?{" "}
+          <Link
+            href={`/${Routes.AUTH}/${Pages.REGISTER}`}
+            className="text-blue-600 hover:underline"
+          >
+            Sign up
+          </Link>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default SignInPage;*/
+"use client";
+
+import { Input } from "@/components/ui/input";
+import { Pages, Routes } from "@/constant/enums";
+import { Label } from "@radix-ui/react-label";
+import Link from "next/link";
+import React, { useState } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import Loader from "@/components/Loader";
+
+function SignInPage() {
+  const router = useRouter();
+  const [isPending, setIsPending] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsPending(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    // Call NextAuth credentials provider
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    setIsPending(false);
+
+    if (result?.error) {
+      toast(result.error, {
+        style: { background: "#fff", color: "red" },
+      });
+    } else {
+      toast("Login successful!", {
+        style: { background: "#fff", color: "green" },
+      });
+      router.push(`/${Pages.PROFILE}`);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <form
+        className="bg-white p-8 rounded shadow-md w-full max-w-sm"
+        onSubmit={handleSubmit}
       >
         <h2 className="text-2xl font-semibold mb-6 text-center">Sign In</h2>
         <div className="mb-4">
